@@ -4,16 +4,26 @@ const mongoose = require('mongoose');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { buildContext } = require("graphql-passport");
 
-const { makeExecutableSchema } = require('graphql-tools');
+const { makeExecutableSchema, addSchemaLevelResolver } = require('graphql-tools');
 const init = require('./src/app');
 
 const models = require('./src/models');
 const typeDefs = require('./src/schemas');
 const resolvers = require('./src/resolvers');
+const { ensureAuthenticated } = require('./src/libs/auth/local-auth');
+
+const freePaths = [
+  "login"
+]
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers
+})
+
+const realSchema = addSchemaLevelResolver(schema, (root, args, context, { fieldName }) => {
+  const isFreePath = freePaths.includes(fieldName);
+  return isFreePath ? null : ensureAuthenticated(context.req);
 })
 
 const app = express();
@@ -30,11 +40,11 @@ app.listen(3001, async () => {
 
 mongoose.connection.on('error', console.error.bind(console, "BD connection error!"));
 
-app.use('/graphql', bodyParser.json(), graphqlExpress({
-        context: (req,res) => buildContext({req, res, ...models}), 
+app.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
+        context: () => buildContext({req, ...models}), 
         graphiql: true,
-        schema
-    })
+        schema: realSchema,
+    }))
 );
 
 app.use('/graphiql', graphiqlExpress({

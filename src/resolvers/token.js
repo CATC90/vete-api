@@ -1,14 +1,18 @@
-const { combineResolvers } = require('graphql-resolvers');
-const passport = require('passport');
-
 module.exports = {
+    Token: {
+        user: async (parent, _, { Veterinary }) => {
+            const veterinary = await Veterinary.findOne({ _id: parent.user, _enabled: true });
+            return veterinary;
+        }
+    },
     Query: {
         login: async (parent, { email, password }, ctx ) => {
-            const { user } = await ctx.authenticate("local-signin", {
+            const { user: data } = await ctx.authenticate("local-signin", {
                 email,
                 password
-              });
-            return user;
+              });   
+            ctx.login(data.user);
+            return data;
         }
     }
 }

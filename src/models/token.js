@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const tokenSchema = mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'Veterinary' },
   token: { type: String },
   createdAt: { type: Date, expires: '15m', default: Date.now }
 });

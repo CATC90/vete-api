@@ -6,7 +6,7 @@ module.exports = {
         }
     },
     Mutation: {
-        createVeterinary:  async (parent, args, { Veterinary }) => {
+        createVeterinary:  async (parent, args, { Veterinary, ...others }, mas) => {
             const created = await Veterinary.create(args.veterinary);
             return created;
         },

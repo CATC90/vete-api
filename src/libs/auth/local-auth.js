@@ -12,16 +12,7 @@ const EXPIRED_TIME = 60 * 15;
 const config = conf => {
   const { secret } = conf;
 
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(async (id, done) => {
-    const user = await User.findOne({ _id: id, _enabled: true });
-    done(null, user);
-  });
-
-  passport.use('local-signin', new GraphQLLocalStrategy( async (email, password, done) => {
+  passport.use('local-signin', new GraphQLLocalStrategy(async (email, password, done) => {
         try {
           const user = await User.findOne({ email, _enabled: true });
           if (!user) {
@@ -50,15 +41,11 @@ const config = conf => {
     ));
 };
 
-const findByToken = async ({ headers }) => {
-  const token = headers.authorization.replace('Bearer ', '');
-  const tokenData = await Token.findOne({ token });
-  return tokenData;
-};
 
-const hasValidToken = async req => {
+const hasValidToken = async (req) => {
   try {
-    const tokenData = await findByToken(req);
+    const token = req.headers.authorization.replace('Bearer ', '');
+    const tokenData = await Token.findOne({ token }).populate('user');
 
     if (!tokenData) {
       return false;
@@ -67,7 +54,7 @@ const hasValidToken = async req => {
     req.authInfo = {
       token: tokenData.token
     };
-    req.user = tokenData.user;
+    req.user = tokenData.user.toJSON();
 
     return true;
   } catch (e) {
@@ -75,27 +62,12 @@ const hasValidToken = async req => {
   }
 };
 
-const setUserCompany = async ({ user }) => {
-  const userData = await User.findById(user);
-  return userData?.company;
-};
-
-const ensureAuthenticated = () => {
-  return async (req, res, next) => {
+const ensureAuthenticated = async (req) => {
     const validToken = await hasValidToken(req);
-    if (validToken || req.isAuthenticated()) {
-      return next();
+    if (validToken) {
+      return true;
     }
-    return res.status(status.UNAUTHORIZED).end();
+    throw new Error('Unauthorized');
   };
-};
 
-const initialize = () => {
-  passport.initialize();
-};
-
-const session = () => {
-  passport.session();
-};
-
-module.exports = { config, ensureAuthenticated, initialize, session };
+module.exports = { config, ensureAuthenticated };

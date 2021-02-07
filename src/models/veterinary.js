@@ -32,4 +32,4 @@ VeterinarySchema.pre('save', async function(next){
 })
 
 
-module.exports = mongoose.model('veterinary', VeterinarySchema);
+module.exports = mongoose.model('Veterinary', VeterinarySchema);
