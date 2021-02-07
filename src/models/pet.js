@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
-const { composeWithMongoose } = require('graphql-compose-mongoose');
 
 const { Schema } = mongoose;
 
 const PetSchema = new Schema({
-    name: String,
-    age: Number,
+    name: { type: String, required: true },
+    age: { type: Number, required: true },
+    type: { type: String, enum: ["cat", "dog"], required: true},
+    description: { type: String },
+    _enabled: { type: Boolean, default: true },
+    cases: [{ type: Schema.Types.ObjectId, ref: 'Cases' }] 
 },
 { timestamps: true });
 
-module.exports = {
-    PetSchema: mongoose.model('Pet', PetSchema),
-    PetGql: composeWithMongoose(mongoose.model('Pet', PetSchema))
-}
+module.exports = mongoose.model('Pet', PetSchema);

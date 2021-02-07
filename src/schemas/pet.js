@@ -1,14 +1,34 @@
-const { PetGql } = require('../models/Pet');
+module.exports = `
+    enum animalType {
+        dog
+        cat
+    }
+    input PetInput {
+        name: String!
+        age: Int!
+        description: String
+        cases: [Cases!]
+        type: animalType!
+    }
 
-const PetQuery = {
-    petById: PetGql.getResolver("findById")
-};
+    type Pet {
+        _id: ID!
+        name: String!
+        age: Int!
+        type: animalType!
+        description: String
+        createdAt: String!
+        updatedAt: String!
+        _enabled: Boolean!
+        cases: [Cases!]
+    }
 
-const PetMutation = {
-    petCreateOne: PetGql.getResolver("createOne")
-};
+    extend type Query {
+        findPetById(id: ID!): Pet!
+        findPet(field: String!, value: String!): Pet!
+    }
 
-module.exports = {
-    PetQuery,
-    PetMutation    
-};
+    extend type Mutation {
+        createPet(pet: PetInput!): Pet!
+    }
+`;

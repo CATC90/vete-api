@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { composeWithMongoose } = require('graphql-compose-mongoose');
 
 const { Schema } = mongoose;
 
@@ -8,9 +7,11 @@ const CustomerSchema = new Schema({
     lastName: String,
     secondLastName: String,
     fullName: String,
+    email: String,
     age: { type: Number, validate: val => val < 100 },
     rut: String,
-    pet: { type: Schema.Types.ObjectId, ref: 'Pet'}
+    pets: [{ type: Schema.Types.ObjectId, ref: 'Pet'}],
+    _enabled: { type: Boolean, default: true }
 },
 { timestamps: true });
 
@@ -19,7 +20,4 @@ CustomerSchema.pre('save', function(next){
     next();
 })
 
-module.exports = {
-    CustomerSchema: mongoose.model('Customer', CustomerSchema),
-    CustomerGql: composeWithMongoose(mongoose.model('Customer', CustomerSchema))
-}
+module.exports = mongoose.model('Customer', CustomerSchema);

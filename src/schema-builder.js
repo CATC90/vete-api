@@ -2,20 +2,10 @@ const { SchemaComposer } = require('graphql-compose');
 
 const schemaComposer = new SchemaComposer();
 
-const { VeterinaryQuery, VeterinaryMutation } = require('./schemas/veterinary');
-const { CustomerQuery, CustomerMutation } = require('./schemas/customer');
-const { PetQuery, PetMutation } = require('./schemas/pet');
+const { queries, mutation } = require('./relations')
 
-schemaComposer.Query.addFields({
-    ...PetQuery,
-    ...VeterinaryQuery,
-    ...CustomerQuery,
-})
+schemaComposer.Query.addFields(queries);
 
-schemaComposer.Mutation.addFields({
-    ...PetMutation,
-    ...VeterinaryMutation,
-    ...CustomerMutation,
-})
+schemaComposer.Mutation.addFields(mutation);
 
 module.exports = schemaComposer.buildSchema();
