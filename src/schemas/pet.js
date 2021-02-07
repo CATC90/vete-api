@@ -7,7 +7,7 @@ module.exports = `
         name: String!
         age: Int!
         description: String
-        cases: [Cases!]
+        cases: [CasesInput!]
         type: animalType!
     }
 

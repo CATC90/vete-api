@@ -1,7 +1,7 @@
 module.exports = {
     Pet: {
         cases: async (parent, _, { Cases }) => {
-            const cases = await Cases.find({ _id: parent.cases, _enabled: true });
+            const cases = await Cases.find({ _id: { $in: parent.cases }, _enabled: true });
             return cases;
         }
     }, 

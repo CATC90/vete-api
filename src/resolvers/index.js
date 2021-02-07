@@ -7,11 +7,13 @@ const tagResolver = require('./tag');
 const veterinaryResolver = require('./veterinary');
 const voucherResolver = require('./voucher');
 const casesResolver = require('./cases');
+const tokenResolver = require('./token');
 
 
 const resolver = {};
 
 module.exports = merge(
+    tokenResolver,
     resolver, 
     casesResolver, 
     customerResolver, 

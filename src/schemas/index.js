@@ -6,6 +6,7 @@ const veterinarySchema = require('./veterinary');
 const voucherSchema = require('./voucher');
 const casesSchema = require('./cases');
 const notesSchema = require('./notes');
+const tokenSchema = require('./token');
 
 
 module.exports = `
@@ -16,6 +17,7 @@ module.exports = `
         _empty: String
     }
 `.concat(
+    tokenSchema,
     notesSchema,
     casesSchema,
     customerSchema, 

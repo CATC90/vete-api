@@ -24,6 +24,7 @@ module.exports = `
         rut: String
         phone: String
         email: String
+        password: String
         age: Int
         socialNetworks: [socialNetworkInput!]
     }
@@ -40,6 +41,7 @@ module.exports = `
         rut: String!
         phone: String!
         email: String!
+        password: String!
         age: Int
         socialNetworks: [socialNetwork!]
     }

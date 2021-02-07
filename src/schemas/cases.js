@@ -7,11 +7,11 @@ module.exports = `
     input CasesInput {
         name: String
         description: String
-        veterinary: [Veterinary!]
+        veterinary: [VeterinaryInput!]
         diagnosis: String
         status: caseStatus
         result: String
-        notes: [Note!]
+        notes: [NoteInput!]
      }
 
     type Cases {

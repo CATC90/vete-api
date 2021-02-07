@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const isEmail = require('../libs/validators/isEmail');
+const isPassword = require('../libs/validators/isPassword');
+const { encryptPassword } = require('../libs/auth/password-utils');
 
 const { Schema } = mongoose;
 
@@ -10,7 +13,8 @@ const VeterinarySchema = new Schema({
     age: Number,
     rut: String,
     phone: String,
-    email: String,
+    email: { type: String, required: true, validate: isEmail },
+    password: { type: String, required: true, validate: isPassword },
     socialNetworks: [
         {
             type: { type: String, enum: ["twitter", "facebook", "instagram", "youtube"] },
@@ -21,7 +25,8 @@ const VeterinarySchema = new Schema({
 },
 { timestamps: true });
 
-VeterinarySchema.pre('save', function(next){
+VeterinarySchema.pre('save', async function(next){
+    this.password = await encryptPassword(this.password)
     this.fullName = `${this.name} ${this.lastName} ${this.secondLastName}`
     next();
 })
