@@ -33,4 +33,9 @@ module.exports = `
         createdAt: String!
         updatedAt: String!
     }
+
+    extend type Mutation {
+        updateNote(id: ID!, update: NoteInput!): Note!
+        deleteNote(id: ID!): Boolean!
+    }
 `

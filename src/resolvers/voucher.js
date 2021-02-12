@@ -39,8 +39,8 @@ module.exports = {
         }
     },
     Mutation: {
-        createVoucher:  async (parent, args, { Voucher }) => {
-            const created = await Voucher.create(args.voucher);
+        createVoucher:  async (parent, args, { req, Voucher }) => {
+            const created = await Voucher.create({ ...args.voucher, veterinary: req.user._id });
             return created;
         }
     }

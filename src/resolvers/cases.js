@@ -22,8 +22,8 @@ module.exports = {
        } 
     },
     Mutation: {
-        createCase: async (_, args, { Cases, Pet }) => {
-            const createdCase = await Cases.create(args.case);
+        createCase: async (_, args, { req, Cases, Pet }) => {
+            const createdCase = await Cases.create({ ...args.case, veterinary: req.user._id });
             const updatedPet = await Pet.findOneAndUpdate({_id: args.petID}, {
                 $push: {
                     cases: createdCase._id
@@ -35,8 +35,8 @@ module.exports = {
             const updatedCase = await Cases.findOneAndUpdate({ _id: args.caseID }, args.update);
             return updatedCase;
         },
-        addNote: async (_, args, { Cases, Note }) => {
-            const note = await Note.create(args.note);
+        addNote: async (_, args, { req, Cases, Note }) => {
+            const note = await Note.create({...args.note, createdBy: req.user._id });
 
             return await Cases.findOneAndUpdate({ _id: args.caseID }, {
                 $push: {

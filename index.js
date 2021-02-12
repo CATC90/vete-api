@@ -13,7 +13,8 @@ const resolvers = require('./src/resolvers');
 const { ensureAuthenticated } = require('./src/libs/auth/local-auth');
 
 const freePaths = [
-  "login"
+  "login",
+  "paginate"
 ]
 
 const schema = makeExecutableSchema({

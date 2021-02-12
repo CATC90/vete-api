@@ -7,7 +7,6 @@ module.exports = `
     input CasesInput {
         name: String
         description: String
-        veterinary: [VeterinaryInput!]
         diagnosis: String
         status: caseStatus
         result: String

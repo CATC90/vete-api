@@ -17,7 +17,6 @@ module.exports = `
      }
 
     input VoucherInput {
-        veterinary: ID!
         customer: ID!
         description: String!
         paidWith: paidMethods!
