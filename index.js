@@ -1,8 +1,7 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { buildContext } = require("graphql-passport");
+const { logger } = require('./src/libs/logger');
 
 const { makeExecutableSchema, addSchemaLevelResolver } = require('graphql-tools');
 const init = require('./src/app');
@@ -14,7 +13,8 @@ const { ensureAuthenticated } = require('./src/libs/auth/local-auth');
 
 const freePaths = [
   "login",
-  "paginate"
+  "paginate",
+  "createVeterinary"
 ]
 
 const schema = makeExecutableSchema({
@@ -22,37 +22,36 @@ const schema = makeExecutableSchema({
   resolvers
 })
 
-const realSchema = addSchemaLevelResolver(schema, (root, args, context, { fieldName }) => {
-  const isFreePath = freePaths.includes(fieldName);
-  return isFreePath ? null : ensureAuthenticated(context.req);
+const realSchema = addSchemaLevelResolver(schema, async (root, args, context, { fieldName }) => {
+  const isFreePath = freePaths.includes(fieldName)
+  if( !isFreePath ){
+    await ensureAuthenticated(context.req);
+  }
+  const { headers, body, params, query } = context.req;
+  logger.info('Incoming request : ', { headers, body, params, query });
 })
 
 const app = express();
-init(app);
+app.use(express.json());
+
 
 // Start the server
 app.listen(3001, async () => {
-  console.log('Go to http://localhost:3001/graphiql to run queries!');
-  await mongoose.connect("mongodb://localhost:27017/vete-api", {
-      useUnifiedTopology: true,
-      useNewUrlParser: true
-  }).then(() => console.log('BD successfully connected'));
+  await init(app);
+  logger.info('Go to http://localhost:3001/graphiql to run queries!');
 });
 
-mongoose.connection.on('error', console.error.bind(console, "BD connection error!"));
-
-app.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
+app.use('/graphql', graphqlExpress(req => ({
         context: () => buildContext({req, ...models}), 
         graphiql: true,
         schema: realSchema,
+        formatError: err => {
+          logger.error(err.message, err.stack);
+          return err;
+        }
     }))
 );
 
 app.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql'
 }));
-
-/**
- * Make it secure
- * Test it with mongodb-memory-server
- */

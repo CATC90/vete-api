@@ -31,5 +31,6 @@ VeterinarySchema.pre('save', async function(next){
     next();
 })
 
+VeterinarySchema.index({ rut: 1 }, { unique: true})
 
 module.exports = mongoose.model('Veterinary', VeterinarySchema);

@@ -22,8 +22,6 @@ module.exports = `
         Voucher
     }
 
-
-
     input PaginationInput {
         offset: Int
         page: Int
